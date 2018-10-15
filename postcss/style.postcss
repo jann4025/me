@@ -1,0 +1,340 @@
+@use postcss-mixins;
+@use postcss-each;
+@use postcss-for;
+@use postcss-color-function;
+@use postcss-triangle;
+@use postcss-nested;
+
+:root {
+  --skin-color: #EEDCB4;
+  --skin-darker: color(#EEDCB4 shade(25%));
+  --hair-color: #c07545;
+  --eye-color: black;
+  --eye-dims: 0.5em;
+  --head-dims: 10em;
+  --radius: 30px;
+}
+
+body, html {
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font: normal 16px/1.3 "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Mask */
+
+.mask {
+  display: none;
+}
+
+/* Themer */
+
+.theme {
+  position: fixed;
+  top: 0; left: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  width: auto;
+  text-align: center;
+  padding: 0;
+  margin: 1rem 0;
+  border-radius: 5px;
+  background-color: #333;
+  transform: translateX(-50%);
+  color: white;
+  
+  label {
+    font-weight: bold;
+    margin: 0 10px;
+    text-transform: uppercase;
+  }
+  
+  input[type="color"] {
+    border: 0;
+    padding: 0;
+    outline: 0;
+    width: 30px;
+    height: 30px;
+    
+    &::-webkit-color-swatch-wrapper {
+      padding: 0;
+    }
+    
+    &::-webkit-color-swatch {
+      border: 0;
+    }
+  }
+}
+
+/* Me */
+
+.me {
+  height: var(--head-dims);
+  overflow: visible;
+  animation: squiggly 0.25s infinite;
+  
+  &, &:after {
+    width: var(--head-dims);
+    background-color: var(--skin-color);
+    border-radius: var(--radius);
+  }
+  
+  &:after {
+    position: relative;
+    z-index: -1;
+    content: "";
+    display: block;
+    height: var(--head-dims);
+    transform:
+      translateY( calc(var(--head-dims) / 2.5) )
+      rotate(45deg)
+      scale(0.7);
+  }
+}
+
+@define-mixin hair {
+  position: absolute;
+  content: "";
+  background-color: var(--hair-color);
+  width: 2em;
+  height: 4em;
+  transform-origin: center;
+}
+
+.hair {
+  
+  &:before, &:after {
+    @mixin hair;
+  }
+  
+  &:before {
+    transform:
+      translate(-1.2em, 1.6em)
+      rotate(-4deg)
+      skewY(50deg)
+      scale(0.65);
+  }
+  
+  &:after {
+    transform:
+      translate( calc( var(--head-dims) / 1.098 ), 1.18em)
+      rotate(32deg)
+      skewY(60deg)
+      scale(0.7);
+  }
+}
+
+@for $i from 1 to 3 {
+  .hair__chunk-$(i) {
+    @mixin hair;
+  }
+}
+
+.hair__chunk-1 {
+  transform:
+    translate(0.6em,-1.2em)
+    rotate(45deg)
+    skewY(50deg)
+    scale(1.2);
+}
+
+.hair__chunk-2 {
+  transform:
+    translate(3.4em,-1.8em)
+    rotate(75deg)
+    skewY(50deg)
+    scale(1.5);
+}
+
+.hair__chunk-3 {
+  transform:
+    translate(7em,-1.1em)
+    rotate(105deg)
+    skewY(46deg)
+    scale(1.45, 1.7);
+}
+
+.nose {
+  position: absolute;
+  triangle: pointing-down;
+  background-color: var(--skin-darker);
+  width: 1.8em;
+  height: 0.85em;
+  transform-origin: right center;
+  transform:
+    translateX( 
+      calc( ( var(--head-dims) / 2 ) - ( 1.8em / 2 ) ) 
+    )
+    translateY(6em);
+}
+
+.brows {
+  
+  &:before, &:after {
+    position: absolute;
+    display: block;
+    content: "";
+    background-color: var(--hair-color);
+    width: 1.2em;
+    height: 0.25em;
+    transform-origin: center;
+  }
+  
+  &:before {
+    transform:
+      translateY(3.8em)
+      translateX(2.8em)
+      rotate(-12deg)
+      skewX(-25deg);
+  }
+  
+  &:after {
+    transform:
+      translateY(3.8em)
+      translateX(6em)
+      rotate(12deg)
+      skewX(25deg);
+  }
+}
+
+.eyes {
+  
+  &:before, &:after {
+    position: absolute;
+    display: block;
+    content: "";
+    background-color: var(--eye-color);
+    width: var(--eye-dims);
+    height: var(--eye-dims);
+    border-radius: 100%;
+    transform-origin: center;
+    box-shadow: 0 -4px 0 6px white;
+  }
+  
+  &:before {
+    transform:
+      translateY(5em)
+      translateX( calc( var(--head-dims) / 3 ) );
+  }
+  
+  &:after {
+    transform:
+      translateY(5em)
+      translateX( calc( var(--head-dims) / 1.6 ) );
+  }
+}
+
+.ears {
+  
+  &:before, &:after {
+    position: absolute;
+    z-index: -1;
+    display: block;
+    content: "";
+    background-color: var(--skin-color);
+    width: 1.5em;
+    height: 2.5em;
+    border-radius: 6px;
+    transform-origin: center;
+  }
+  
+  &:before {
+    transform:
+      translateY(5em)
+      translateX(-0.5em)
+      rotate(-5deg);
+  }
+  
+  &:after {
+    transform:
+      translateY(5em)
+      translateX(
+        calc( var(--head-dims) - ( 1.5em / 1.5 ) )
+      )
+      rotate(5deg);
+  }
+}
+
+.goatee {
+  
+  &:before, &:after {
+    display: block;
+    content: "";
+    position: absolute;
+    background-color: var(--hair-color);
+    transform-origin: center;
+  }
+  
+  &:before {
+    width: 1.8em;
+    height: 2.25em;
+    border-radius: 0 0 5px 5px;
+    transform:
+      translateY(12em)
+      translateX(
+        calc( ( var(--head-dims) / 2 ) - ( 1.8em / 2 ) )
+      );
+  }
+  
+  &:after {
+    width: 0.6em;
+    height: 1.2em;
+    border-radius: 0 0 3px 3px;
+    transform:
+      translateY(8.8em)
+      translateX(
+        calc( ( var(--head-dims) / 2 ) - ( 0.6em / 2 ) )
+      );
+  }
+}
+
+.mouth {
+  position: absolute;
+  width: 2em;
+  height: 0.25em;
+  background-color: var(--skin-darker);
+  border-radius: 3px;
+  transform:
+    translateY(8.2em)
+    translateX(
+      calc( ( var(--head-dims) / 2 ) - ( 2em / 2 ) )
+    );
+  
+  &:before, &:after {
+    @mixin hair;
+  }
+  
+  &:before {
+    transform:
+      translate(0.85em,-2.5em)
+      rotate(105deg)
+      skewY(56deg)
+      scale(0.2, 0.3);
+  }
+  
+  &:after {
+    transform:
+      translate(-0.85em,-2.5em)
+      rotate(75deg)
+      skewY(-56deg)
+      scale(0.2, 0.3);
+  }
+}
+
+@keyframes squiggly {
+    0%    { filter: url('#squiggly-0'); }
+   25%    { filter: url('#squiggly-1'); }
+   50%    { filter: url('#squiggly-3'); }
+  100%    { filter: url('#squiggly-4'); }
+}
